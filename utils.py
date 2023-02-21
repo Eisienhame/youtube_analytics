@@ -14,6 +14,8 @@ class Ychannel:
 
     @classmethod
     def get_service(cls):
+        "Создать специальный объект для работы с API"
+
         # YT_API_KEY скопирован из гугла и вставлен в переменные окружения
         api_key: str = os.getenv('YT_API_KEY')
 
@@ -23,24 +25,29 @@ class Ychannel:
 
     @property
     def id(self, id=None):
+        "Делаем id не изменяемым"
         if id == None:
             return self.__id
         else:
             raise Exception("AttributeError: property 'channel_id' of 'Channel' object has no setter")
 
     def channel_dict(self):
+        "Создается словарь с информацией о Ютуб канале взятый из обьекта для работы с API"
         youtube = Ychannel.get_service()
 
         channel = youtube.channels().list(id=self.id, part='snippet,statistics').execute()
         return channel
 
     def print_info(self):
+        "Вывод инфы "
 
         channel = self.channel_dict()
 
         print(json.dumps(channel, indent=2, ensure_ascii=False))
 
     def to_json(self, name:str):
+        "Создаем json файл с основными параметрами ютуб канала"
+
         dict_for_json = {
             'title':self.title,
             'description':self.description,
