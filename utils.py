@@ -12,6 +12,19 @@ class Ychannel:
         self.videocount = self.channel_dict()['items'][0]['statistics']['videoCount']
         self.viewcount = self.channel_dict()['items'][0]['statistics']['viewCount']
 
+    def __str__(self):
+        return f'Youtube-канал: {self.title}'
+
+    @classmethod
+    def __verify_data(cls, other):
+        return other.subscribers
+    def __lt__(self, other):
+        sc = self.__verify_data(other)
+        return self.subscribers > sc
+    def __add__(self, other):
+        return int(self.subscribers) + int(other.subscribers)
+
+
     @classmethod
     def get_service(cls):
         "Создать специальный объект для работы с API"
