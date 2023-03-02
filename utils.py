@@ -72,3 +72,5 @@ class Ychannel:
 
         with open(name, 'w', encoding='utf-8') as f:
             json.dump(dict_for_json, f, ensure_ascii=False, indent=4)
+
+class Video:
