@@ -1,6 +1,6 @@
-import json, os, datetime
+import json, os, datetime, isodate
 from googleapiclient.discovery import build
-
+from utils.video import Video, PLVideo
 class PlayList:
     def __init__(self, playlist_id):
         self.__playlist_id = playlist_id
@@ -28,12 +28,38 @@ class PlayList:
         playlist = youtube.playlists().list(id=self.__playlist_id, part='snippet').execute()
         return playlist
 
-    def playlist_dict2(self):
-        "Создается словарь с информацией о Ютуб playlist взятый из обьекта для работы с API"
+    def playlist_videos(self):
+        "Создается словарь с информацией о Ютуб видео в playlist взятый из обьекта для работы с API"
         youtube = PlayList.get_service()
-        playlist = youtube.playlists().list(id=self.__playlist_id, part='data').execute()
+        playlist = youtube.playlistItems().list(playlistId=self.__playlist_id, part='contentDetails').execute()
         return playlist
 
     @property
     def total_duration(self):
-        pass
+        'Получаем суммарное время видео из плейлиста'
+        youtube = PlayList.get_service()
+        video_ids = []
+        for i in self.playlist_videos()['items']:
+            video_ids.append(i['contentDetails']['videoId'])
+
+        response = youtube.videos().list(part='contentDetails,statistics', id=','.join(video_ids)).execute()
+
+        total_duration = datetime.timedelta()
+
+        for i in response['items']:
+            iso_duration = i['contentDetails']['duration']
+            duration = isodate.parse_duration(iso_duration)
+            total_duration += duration
+
+        return total_duration
+
+    def show_best_video(self):
+        best_id = ''
+        best_likes = 0
+        for i in self.playlist_videos()['items']:
+            next_video = Video(i['contentDetails']['videoId'])
+            if int(next_video.likes_count) > best_likes:
+                best_likes = int(next_video.likes_count)
+                best_id = i['contentDetails']['videoId']
+        link = 'https://youtu.be/' + best_id
+        print(link)
