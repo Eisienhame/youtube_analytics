@@ -15,4 +15,6 @@ video2 = PLVideo('BBotskuyw_M', 'PL7Ntiz7eTKwrqmApjln9u4ItzhDLRtPuD')
 pl = PlayList('PLguYHBi01DWr4bRWc4uaguASmo7lW4GCb')
 print(pl.playlist_name)
 print(pl.url)
-print(pl.playlist_dict2())
+print(pl.playlist_videos())
+
+pl.show_best_video()
