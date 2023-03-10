@@ -1,14 +1,31 @@
 import json, os
 from googleapiclient.discovery import build
 
+class InstantiateIndexError(Exception):
+    """Класс-исключение для ошибок, связанных с id файла"""
+    def __init__(self, *args):
+        self.message = args[0] if args else "Unknown error"
 
+    def __str__(self):
+        return self.message
 
 class Video:
     def __init__(self, video_id):
-        self.__video_id = video_id
-        self.video_name = self.video_dict(self.__video_id)['items'][0]['snippet']['title']
-        self.view_count = self.video_dict(self.__video_id)['items'][0]['statistics']['viewCount']
-        self.likes_count = self.video_dict(self.__video_id)['items'][0]['statistics']['likeCount']
+        try:
+            if type(video_id) == str and len(video_id) == 11:
+                self.__video_id = video_id
+                self.video_name = self.video_dict(self.__video_id)['items'][0]['snippet']['title']
+                self.view_count = self.video_dict(self.__video_id)['items'][0]['statistics']['viewCount']
+                self.likes_count = self.video_dict(self.__video_id)['items'][0]['statistics']['likeCount']
+            else:
+                self.__video_id = video_id
+                self.video_name = None
+                self.view_count = None
+                self.likes_count = None
+
+                raise InstantiateIndexError
+        except InstantiateIndexError:
+            print("incorrect id")
 
     def __repr__(self):
         return self.video_name
